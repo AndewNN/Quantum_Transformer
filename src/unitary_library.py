@@ -17,7 +17,7 @@ def unitary(
                                                                       1: Apply the ansatz to the second register only, which is used for the position embeddings
                                                                       2: Apply the ansatz to the third register only, which is used for the physicochemical embeddings
         layers (int): The number of layers of the ansatz
-        conditional (bool): Whether the ansatz is conditional on the third register
+        skip_entanglement (int): Whether to skip the entanglement gates in the ansatz
 
     Returns:
         None
@@ -27,6 +27,9 @@ def unitary(
     start, end = 0, 0
 
     # Since passing strings to a kernel are not supported, we use an integer to represent the choice of function
+    if func == -2:
+        start, end = 0, 0
+
     if func == -1:
         start, end = 0, qubits.size()
 
@@ -48,6 +51,7 @@ def unitary(
         for i in range(start, end):
             if i < end - 1:
                 x.ctrl(qubits[i], qubits[i + 1])  # type: ignore  # noqa: F821
+                # x.ctrl(qubits[start], qubits[i + 1])  # type: ignore  # noqa: F821
             else:
                 x.ctrl(qubits[i], qubits[start])  # type: ignore  # noqa: F821
 
@@ -74,7 +78,7 @@ def controlled_adjoint_unitary(
                                                                       1: Apply the ansatz to the second register only, which is used for the position embeddings
                                                                       2: Apply the ansatz to the third register only, which is used for the physicochemical embeddings
         layers (int): The number of layers of the ansatz
-        conditional (bool): Whether the ansatz is conditional on the third register
+        skip_entanglement (int): Whether to skip the entanglement gates in the ansatz
 
     Returns:
         None
@@ -84,6 +88,9 @@ def controlled_adjoint_unitary(
     start, end = 0, 0
 
     # Since passing strings to a kernel are not supported, we use an integer to represent the choice of function
+    if func == -2:
+        start, end = 0, 0
+
     if func == -1:
         start, end = 0, qubits.size()
 
@@ -104,6 +111,7 @@ def controlled_adjoint_unitary(
             x.ctrl(control, qubits[end - 1], qubits[start])  # type: ignore  # noqa: F821
             for i in range(end - 2, start - 1, -1):
                 x.ctrl(control, qubits[i], qubits[i + 1])  # type: ignore  # noqa: F821
+                # x.ctrl(control, qubits[start], qubits[i + 1])  # type: ignore  # noqa: F821
 
         # Apply Ry gates in reverse order with negative angles
         for i in range(end - 1, start - 1, -1):
@@ -134,13 +142,16 @@ def controlled_unitary(
                                                                       1: Apply the ansatz to the second register only, which is used for the position embeddings
                                                                       2: Apply the ansatz to the third register only, which is used for the physicochemical embeddings
         layers (int): The number of layers of the ansatz
-        conditional (bool): Whether the ansatz is conditional on the third register
+        skip_entanglement (int): Whether to skip the entanglement gates in the ansatz
 
     Returns:
         None
 
     """
     start, end = 0, 0
+
+    if func == -2:
+        start, end = 0, 0
 
     if func == -1:
         start, end = 0, qubits.size()
@@ -165,6 +176,7 @@ def controlled_unitary(
         for i in range(start, end):
             if i < end - 1:
                 x.ctrl(control, qubits[i], qubits[i + 1])  # type: ignore  # noqa: F821
+                # x.ctrl(control, qubits[start], qubits[i + 1])  # type: ignore  # noqa: F821
             else:
                 x.ctrl(control, qubits[i], qubits[start])  # type: ignore  # noqa: F821
 
